@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Mining: Concepts &amp; Techniques — Chapter 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a href="#home" class="brand">
+    <span class="mark">⛏️</span>
+    <span>Data Mining · Ch.1</span>
+  </a>
+  <div class="spacer"></div>
+  <div class="progress-wrap" id="progressWrap"><div class="fill" id="progressFill"></div></div>
+  <div class="counter" id="counter"></div>
+  <button class="iconbtn" id="themeBtn" title="Toggle theme">◐</button>
+</div>
+
+<!-- ============ HOME VIEW ============ -->
+<div id="view-home">
+  <section class="hero">
+    <div class="eyebrow"><span class="dot"></span> IIUC CSE COMPANION · 41 PAGES</div>
+    <h1>Data Mining: <span class="accent">Concepts &amp; Techniques</span></h1>
+    <p class="lede">An interactive walkthrough of Chapter 1 — Introduction, from Han, Kamber &amp; Pei's classic text. Every page from the original 41-slide deck, rebuilt for the web.</p>
+    <div class="hero-meta">
+      <div><b>41</b>Pages</div>
+      <div><b>10</b>Sections</div>
+      <div><b>3rd ed.</b>Source text</div>
+    </div>
+    <div class="hero-actions">
+      <a href="#1" class="btn btn-primary">Start from page 1 →</a>
+      <a href="#" id="resumeBtn" class="btn btn-ghost" style="display:none;">Resume where you left off</a>
+    </div>
+  </section>
+
+  <div class="toc-wrap" id="tocWrap"></div>
+
+  <div class="footer-note">
+    Source: Jiawei Han, Micheline Kamber &amp; Jian Pei — <em>Data Mining: Concepts and Techniques</em> (3rd ed.), Chapter 1. ©2011 Han, Kamber &amp; Pei. Rebuilt as a study companion.
+  </div>
+</div>
+
+<!-- ============ SLIDE VIEW ============ -->
+<div id="view-slide">
+  <div class="stage">
+    <div class="slide-card-main">
+      <div class="kicker" id="slideKicker"></div>
+      <h2 class="slide-title" id="slideTitle"></h2>
+      <div class="content" id="slideContent"></div>
+    </div>
+  </div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn">← <span class="label">Prev</span></button>
+    <div class="nav-jump" id="jump"></div>
+    <button class="nav-btn primary" id="nextBtn"><span class="label">Next</span> →</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SLIDE DATA — 41 pages, mirroring the source deck
+   ============================================================ */
+const SECTIONS = [
+  {name:"Opening", range:[1,2]},
+  {name:"Why Data Mining?", range:[3,6]},
+  {name:"What Is Data Mining?", range:[7,14]},
+  {name:"A Multi-Dimensional View", range:[15,16]},
+  {name:"What Kind of Data Can Be Mined?", range:[17,18]},
+  {name:"What Kinds of Patterns Can Be Mined?", range:[19,27]},
+  {name:"What Technology Is Used?", range:[28,30]},
+  {name:"What Applications Are Targeted?", range:[31,32]},
+  {name:"Major Issues in Data Mining", range:[33,35]},
+  {name:"History, Society &amp; References", range:[36,41]},
+];
+
+function TOC(active){
+  const items = [
+    "Why Data Mining?","What Is Data Mining?","A Multi-Dimensional View of Data Mining",
+    "What Kind of Data Can Be Mined?","What Kinds of Patterns Can Be Mined?",
+    "What Technology Are Used?","What Kind of Applications Are Targeted?",
+    "Major Issues in Data Mining","A Brief History of Data Mining and Data Mining Society","Summary"
+  ];
+  return `<ul class="toc-list">` + items.map((t,i)=>
+    `<li class="${i===active?'active':''}"><span class="idx">${String(i+1).padStart(2,'0')}</span> ${t}</li>`
+  ).join('') + `</ul>`;
+}
+
+const S = {};
+
+S[1] = {
+  kicker:"Cover", title:"Data Mining: Concepts and Techniques",
+  html:`<div class="title-slide">
+    <div class="rainbow"></div>
+    <h1>Data Mining</h1>
+    <h2>Concepts and Techniques</h2>
+    <div class="ed">3rd edition</div>
+    <div class="chapter">— Chapter 1 · Introduction —</div>
+    <div class="authors">Jiawei Han, Micheline Kamber, and Jian Pei<br>
+    University of Illinois at Urbana-Champaign &amp; Simon Fraser University<br>
+    ©2011 Han, Kamber &amp; Pei. All rights reserved.</div>
+  </div>`
+};
+
+S[2] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(0) };
+
+S[3] = {
+  kicker:"Why Data Mining?", title:"Why Data Mining?",
+  html:`<ul>
+    <li>The Explosive Growth of Data: from terabytes to petabytes
+      <ul>
+        <li>Data collection and data availability
+          <ul><li>Automated data collection tools, database systems, Web, computerized society</li></ul>
+        </li>
+        <li>Major sources of abundant data
+          <ul>
+            <li>Business: Web, e-commerce, transactions, stocks, …</li>
+            <li>Science: Remote sensing, bioinformatics, scientific simulation, …</li>
+            <li>Society and everyone: news, digital cameras, YouTube</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <div class="quote-big">We are drowning in data, but starving for knowledge!</div>
+  <p>"Necessity is the mother of invention" — Data mining: automated analysis of massive data sets.</p>`
+};
+
+S[4] = {
+  kicker:"Why Data Mining?", title:"Evolution of Sciences",
+  html:`<ul>
+    <li>Before 1600, <b>empirical science</b></li>
+    <li>1600–1950s, <b>theoretical science</b>
+      <ul><li>Each discipline has grown a theoretical component. Theoretical models often motivate experiments and generalize our understanding.</li></ul>
+    </li>
+    <li>1950s–1990s, <b>computational science</b>
+      <ul>
+        <li>Over the last 50 years, most disciplines have grown a third, computational branch (e.g. empirical, theoretical, and computational ecology, or physics, or linguistics).</li>
+        <li>Computational science traditionally meant simulation — it grew out of our inability to find closed-form solutions for complex mathematical models.</li>
+      </ul>
+    </li>
+    <li>1990–now, <b>data science</b>
+      <ul>
+        <li>The flood of data from new scientific instruments and simulations</li>
+        <li>The ability to economically store and manage petabytes of data online</li>
+        <li>The Internet and computing Grid that makes all these archives universally accessible</li>
+        <li>Scientific info. management, acquisition, organization, query, and visualization tasks scale almost linearly with data volumes. <b>Data mining is a major new challenge!</b></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="callout">Jim Gray &amp; Alex Szalay, <em>The World Wide Telescope: An Archetype for Online Science</em>, Comm. ACM, 45(11): 50-54, Nov. 2002</div>`
+};
+
+S[5] = {
+  kicker:"Why Data Mining?", title:"Evolution of Database Technology",
+  html:`<ul>
+    <li><b>1960s:</b> Data collection, database creation, IMS and network DBMS</li>
+    <li><b>1970s:</b> Relational data model, relational DBMS implementation</li>
+    <li><b>1980s:</b>
+      <ul>
+        <li>RDBMS, advanced data models (extended-relational, OO, deductive, etc.)</li>
+        <li>Application-oriented DBMS (spatial, scientific, engineering, etc.)</li>
+      </ul>
+    </li>
+    <li><b>1990s:</b> Data mining, data warehousing, multimedia databases, and Web databases</li>
+    <li><b>2000s:</b>
+      <ul>
+        <li>Stream data management and mining</li>
+        <li>Data mining and its applications</li>
+        <li>Web technology (XML, data integration) and global information systems</li>
+      </ul>
+    </li>
+  </ul>`
+};
+
+S[6] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(1) };
+
+S[7] = {
+  kicker:"What Is Data Mining?", title:"What Is Data Mining?",
+  html:`<ul>
+    <li>Data mining (knowledge discovery from data)
+      <ul><li>Extraction of interesting (non-trivial, implicit, previously unknown and potentially useful) patterns or knowledge from a huge amount of data</li>
+      <li>Data mining: a misnomer?</li></ul>
+    </li>
+    <li>Alternative names
+      <ul><li>Knowledge discovery (mining) in databases (KDD), knowledge extraction, data/pattern analysis, data archeology, data dredging, information harvesting, business intelligence, etc.</li></ul>
+    </li>
+    <li>Watch out: is everything "data mining"?
+      <ul>
+        <li>Simple search and query processing</li>
+        <li>(Deductive) expert systems</li>
+      </ul>
+    </li>
+  </ul>`
+};
+
+S[8] = {
+  kicker:"What Is Data Mining?", title:"Knowledge Discovery (KDD) Process",
+  html:`<p>This is a view from typical database systems and data warehousing communities. Data mining plays an essential role in the knowledge discovery process.</p>
+  <div class="pyramid">
+    <div class="row" style="background:linear-gradient(90deg,#0284c7,#0369a1)"><span>1 · Data Cleaning</span><span class="sub">remove noise &amp; inconsistency</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#0369a1,#075985)"><span>2 · Data Integration</span><span class="sub">combine multiple sources</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#075985,#7c3aed)"><span>3 · Data Warehouse</span><span class="sub">store &amp; organize</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#7c3aed,#9333ea)"><span>4 · Selection</span><span class="sub">task-relevant data</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#9333ea,#059669)"><span>5 · Data Mining</span><span class="sub">pattern discovery engine</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#059669,#10b981)"><span>6 · Pattern Evaluation</span><span class="sub">→ Knowledge</span></div>
+  </div>`
+};
+
+S[9] = {
+  kicker:"What Is Data Mining?", title:"Example: A Web Mining Framework",
+  html:`<p>Web mining usually involves:</p>
+  <ul>
+    <li>Data cleaning</li>
+    <li>Data integration from multiple sources</li>
+    <li>Warehousing the data</li>
+    <li>Data cube construction</li>
+    <li>Data selection for data mining</li>
+    <li>Data mining</li>
+    <li>Presentation of the mining results</li>
+    <li>Patterns and knowledge to be used or stored into a knowledge-base</li>
+  </ul>`
+};
+
+S[10] = {
+  kicker:"What Is Data Mining?", title:"Data Mining in Business Intelligence",
+  html:`<p>Increasing potential to support business decisions, from raw sources up to the end user:</p>
+  <div class="pyramid">
+    <div class="row" style="background:linear-gradient(90deg,#64748b,#475569)"><span>Data Sources</span><span class="sub">paper, files, web docs, DB systems · DBA</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#0284c7,#0369a1)"><span>Data Preprocessing / Integration, Data Warehouses</span><span class="sub">DBA</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#0369a1,#0891b2)"><span>Data Exploration</span><span class="sub">statistical summary, querying &amp; reporting · Data Analyst</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#7c3aed,#9333ea)"><span>Data Mining</span><span class="sub">information discovery · Data Analyst</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#9333ea,#c026d3)"><span>Data Presentation</span><span class="sub">visualization techniques · Business Analyst</span></div>
+    <div class="row" style="background:linear-gradient(90deg,#059669,#10b981)"><span>Decision Making</span><span class="sub">End User</span></div>
+  </div>`
+};
+
+S[11] = {
+  kicker:"What Is Data Mining?", title:"Example: Mining vs. Data Exploration",
+  html:`<ul>
+    <li>Business intelligence view
+      <ul><li>Warehouse, data cube, reporting — but not much mining</li></ul>
+    </li>
+    <li>Business objects vs. data mining tools</li>
+    <li>Supply chain example: tools</li>
+    <li>Data presentation</li>
+    <li>Exploration</li>
+  </ul>`
+};
+
+S[12] = {
+  kicker:"What Is Data Mining?", title:"KDD Process: A Typical View from ML and Statistics",
+  html:`<p>This is a view from typical machine learning and statistics communities:</p>
+  <div class="cols">
+    <div class="callout"><b>Data Pre-Processing</b><br>Data integration · Normalization · Feature selection · Dimension reduction</div>
+    <div class="callout" style="border-left-color:var(--violet)"><b>Data Mining</b><br>Pattern discovery · Association &amp; correlation · Classification · Clustering · Outlier analysis · …</div>
+  </div>
+  <div class="callout" style="border-left-color:var(--amber); margin-top:10px;"><b>Post-Processing</b><br>Pattern evaluation · Pattern selection · Pattern interpretation · Pattern visualization</div>
+  <p style="margin-top:16px;">Input Data → Pre-Processing → Mining → Post-Processing → <b>Knowledge</b></p>`
+};
+
+S[13] = {
+  kicker:"What Is Data Mining?", title:"Example: Medical Data Mining",
+  html:`<ul>
+    <li>Health care &amp; medical data mining — often adopts this view from statistics and machine learning</li>
+    <li>Preprocessing of the data (including feature extraction and dimension reduction)</li>
+    <li>Classification or/and clustering processes</li>
+    <li>Post-processing for presentation</li>
+  </ul>`
+};
+
+S[14] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(2) };
+
+S[15] = {
+  kicker:"A Multi-Dimensional View", title:"Multi-Dimensional View of Data Mining",
+  html:`<h3>Data to be mined</h3>
+  <ul><li>Database data (extended-relational, object-oriented, heterogeneous, legacy), data warehouse, transactional data, stream, spatiotemporal, time-series, sequence, text and web, multi-media, graphs &amp; social and information networks</li></ul>
+  <h3>Knowledge to be mined <span class="mono" style="color:var(--muted);font-size:13px;">(data mining functions)</span></h3>
+  <ul>
+    <li>Characterization, discrimination, association, classification, clustering, trend/deviation, outlier analysis, etc.</li>
+    <li>Descriptive vs. predictive data mining</li>
+    <li>Multiple/integrated functions and mining at multiple levels</li>
+  </ul>
+  <h3>Techniques utilized</h3>
+  <ul><li>Data-intensive, data warehouse (OLAP), machine learning, statistics, pattern recognition, visualization, high-performance, etc.</li></ul>
+  <h3>Applications adapted</h3>
+  <ul><li>Retail, telecommunication, banking, fraud analysis, bio-data mining, stock market analysis, text mining, Web mining, etc.</li></ul>`
+};
+
+S[16] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(3) };
+
+S[17] = {
+  kicker:"What Kind of Data?", title:"Data Mining: On What Kinds of Data?",
+  html:`<ul>
+    <li>Database-oriented data sets and applications
+      <ul><li>Relational database, data warehouse, transactional database</li></ul>
+    </li>
+    <li>Advanced data sets and advanced applications
+      <ul>
+        <li>Data streams and sensor data</li>
+        <li>Time-series data, temporal data, sequence data (incl. bio-sequences)</li>
+        <li>Structure data, graphs, social networks and multi-linked data</li>
+        <li>Object-relational databases</li>
+        <li>Heterogeneous databases and legacy databases</li>
+        <li>Spatial data and spatiotemporal data</li>
+        <li>Multimedia database</li>
+        <li>Text databases</li>
+        <li>The World-Wide Web</li>
+      </ul>
+    </li>
+  </ul>`
+};
+
+S[18] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(4) };
+
+S[19] = {
+  kicker:"Patterns · Fn 1", title:"Data Mining Function: (1) Generalization",
+  html:`<ul>
+    <li>Information integration and data warehouse construction
+      <ul><li>Data cleaning, transformation, integration, and multidimensional data model</li></ul>
+    </li>
+    <li>Data cube technology
+      <ul>
+        <li>Scalable methods for computing (i.e., materializing) multidimensional aggregates</li>
+        <li>OLAP (online analytical processing)</li>
+      </ul>
+    </li>
+    <li>Multidimensional concept description: characterization and discrimination
+      <ul><li>Generalize, summarize, and contrast data characteristics, e.g., dry vs. wet region</li></ul>
+    </li>
+  </ul>`
+};
+
+S[20] = {
+  kicker:"Patterns · Fn 2", title:"Data Mining Function: (2) Association and Correlation Analysis",
+  html:`<ul>
+    <li>Frequent patterns (or frequent itemsets)
+      <ul><li>What items are frequently purchased together in your Walmart?</li></ul>
+    </li>
+    <li>Association, correlation vs. causality
+      <ul>
+        <li>A typical association rule: <span class="tag">Diaper → Beer [0.5%, 75%] (support, confidence)</span></li>
+        <li>Are strongly associated items also strongly correlated?</li>
+      </ul>
+    </li>
+    <li>How to mine such patterns and rules efficiently in large datasets?</li>
+    <li>How to use such patterns for classification, clustering, and other applications?</li>
+  </ul>`
+};
+
+S[21] = {
+  kicker:"Patterns · Fn 3", title:"Data Mining Function: (3) Classification",
+  html:`<ul>
+    <li>Classification and label prediction
+      <ul>
+        <li>Construct models (functions) based on some training examples</li>
+        <li>Describe and distinguish classes or concepts for future prediction — e.g., classify countries based on climate, or classify cars based on gas mileage</li>
+        <li>Predict some unknown class labels</li>
+      </ul>
+    </li>
+  </ul>
+  <h3>Typical methods</h3>
+  <div class="tag-row">
+    <span class="tag">Decision trees</span><span class="tag">Naïve Bayesian</span><span class="tag">SVM</span>
+    <span class="tag">Neural networks</span><span class="tag">Rule-based</span><span class="tag">Pattern-based</span><span class="tag">Logistic regression</span>
+  </div>
+  <h3>Typical applications</h3>
+  <p>Credit card fraud detection, direct marketing, classifying stars, diseases, web-pages, …</p>`
+};
+
+S[22] = {
+  kicker:"Patterns · Fn 4", title:"Data Mining Function: (4) Cluster Analysis",
+  html:`<ul>
+    <li>Unsupervised learning (i.e., class label is unknown)</li>
+    <li>Group data to form new categories (i.e., clusters), e.g., cluster houses to find distribution patterns</li>
+    <li>Principle: maximizing intra-class similarity &amp; minimizing interclass similarity</li>
+    <li>Many methods and applications</li>
+  </ul>`
+};
+
+S[23] = {
+  kicker:"Patterns · Fn 5", title:"Data Mining Function: (5) Outlier Analysis",
+  html:`<ul>
+    <li>Outlier: a data object that does not comply with the general behavior of the data</li>
+    <li>Noise or exception? — one person's garbage could be another person's treasure</li>
+    <li>Methods: by-product of clustering or regression analysis, …</li>
+    <li>Useful in fraud detection, rare events analysis</li>
+  </ul>`
+};
+
+S[24] = {
+  kicker:"Time &amp; Ordering", title:"Sequential Pattern, Trend and Evolution Analysis",
+  html:`<ul>
+    <li>Sequence, trend and evolution analysis
+      <ul>
+        <li>Trend, time-series, and deviation analysis: e.g., regression and value prediction</li>
+        <li>Sequential pattern mining — e.g., first buy digital camera, then buy large SD memory cards</li>
+        <li>Periodicity analysis</li>
+        <li>Motifs and biological sequence analysis (approximate and consecutive motifs)</li>
+        <li>Similarity-based analysis</li>
+      </ul>
+    </li>
+    <li>Mining data streams
+      <ul><li>Ordered, time-varying, potentially infinite, data streams</li></ul>
+    </li>
+  </ul>`
+};
+
+S[25] = {
+  kicker:"Structure &amp; Network", title:"Structure and Network Analysis",
+  html:`<ul>
+    <li>Graph mining
+      <ul><li>Finding frequent subgraphs (e.g., chemical compounds), trees (XML), substructures (web fragments)</li></ul>
+    </li>
+    <li>Information network analysis
+      <ul>
+        <li>Social networks: actors (objects, nodes) and relationships (edges) — e.g., author networks in CS, terrorist networks</li>
+        <li>Multiple heterogeneous networks — a person could be part of multiple information networks: friends, family, classmates, …</li>
+        <li>Links carry a lot of semantic information: link mining</li>
+      </ul>
+    </li>
+    <li>Web mining
+      <ul>
+        <li>Web is a big information network: from PageRank to Google</li>
+        <li>Analysis of Web information networks: community discovery, opinion mining, usage mining, …</li>
+      </ul>
+    </li>
+  </ul>`
+};
+
+S[26] = {
+  kicker:"Evaluation", title:"Evaluation of Knowledge",
+  html:`<ul>
+    <li>Are all mined knowledge interesting?
+      <ul>
+        <li>One can mine a tremendous amount of "patterns" and knowledge</li>
+        <li>Some may fit only certain dimension space (time, location, …)</li>
+        <li>Some may not be representative, may be transient, …</li>
+      </ul>
+    </li>
+    <li>Evaluation of mined knowledge → directly mine only interesting knowledge?</li>
+  </ul>
+  <div class="tag-row">
+    <span class="tag">Descriptive vs. predictive</span><span class="tag">Coverage</span>
+    <span class="tag">Typicality vs. novelty</span><span class="tag">Accuracy</span><span class="tag">Timeliness</span>
+  </div>`
+};
+
+S[27] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(5) };
+
+S[28] = {
+  kicker:"Technology Used", title:"Data Mining: Confluence of Multiple Disciplines",
+  html:`<p style="text-align:center; margin:8px 0 24px;">Data mining sits at the intersection of several established fields:</p>
+  <div class="tag-row" style="justify-content:center; gap:12px;">
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Machine Learning</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Pattern Recognition</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Statistics</span>
+  </div>
+  <div style="text-align:center; margin:18px 0; font-family:'Space Grotesk'; font-weight:700; font-size:22px; background:linear-gradient(90deg,var(--sky),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent;">↘ &nbsp; Data Mining &nbsp; ↙</div>
+  <div class="tag-row" style="justify-content:center; gap:12px;">
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Applications</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Algorithms</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Database Technology</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">Visualization</span>
+    <span class="tag" style="font-size:14px; padding:10px 16px;">High-Performance Computing</span>
+  </div>`
+};
+
+S[29] = {
+  kicker:"Technology Used", title:"Why Confluence of Multiple Disciplines?",
+  html:`<ul>
+    <li>Tremendous amount of data
+      <ul><li>Algorithms must be highly scalable to handle terabytes of data</li></ul>
+    </li>
+    <li>High-dimensionality of data
+      <ul><li>Micro-array data may have tens of thousands of dimensions</li></ul>
+    </li>
+    <li>High complexity of data
+      <ul>
+        <li>Data streams and sensor data</li>
+        <li>Time-series data, temporal data, sequence data</li>
+        <li>Structure data, graphs, social networks and multi-linked data</li>
+        <li>Heterogeneous databases and legacy databases</li>
+        <li>Spatial, spatiotemporal, multimedia, text and Web data</li>
+        <li>Software programs, scientific simulations</li>
+      </ul>
+    </li>
+    <li>New and sophisticated applications</li>
+  </ul>`
+};
+
+S[30] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(6) };
+
+S[31] = {
+  kicker:"Applications", title:"Applications of Data Mining",
+  html:`<ul>
+    <li>Web page analysis: from web page classification, clustering to PageRank &amp; HITS algorithms</li>
+    <li>Collaborative analysis &amp; recommender systems</li>
+    <li>Basket data analysis to targeted marketing</li>
+    <li>Biological and medical data analysis: classification, cluster analysis (microarray data analysis), biological sequence analysis, biological network analysis</li>
+    <li>Data mining and software engineering (e.g., IEEE Computer, Aug. 2009 issue)</li>
+    <li>From major dedicated data mining systems/tools (e.g., SAS, MS SQL-Server Analysis Manager, Oracle Data Mining Tools) to invisible data mining</li>
+  </ul>
+  <div class="callout">The Hyperlink-Induced Topic Search (HITS) algorithm, developed by Jon Kleinberg, is a link analysis algorithm used to rank web pages. It identifies two types of web pages: hubs and authorities. Hubs are pages that link to many other pages, while authorities are pages that are linked to by many hubs.</div>`
+};
+
+S[32] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(7) };
+
+S[33] = {
+  kicker:"Major Issues · 1", title:"Major Issues in Data Mining (1)",
+  html:`<h3>Mining Methodology</h3>
+  <ul>
+    <li>Mining various and new kinds of knowledge</li>
+    <li>Mining knowledge in multi-dimensional space</li>
+    <li>Data mining: an interdisciplinary effort</li>
+    <li>Boosting the power of discovery in a networked environment</li>
+    <li>Handling noise, uncertainty, and incompleteness of data</li>
+    <li>Pattern evaluation and pattern- or constraint-guided mining</li>
+  </ul>
+  <h3>User Interaction</h3>
+  <ul>
+    <li>Interactive mining</li>
+    <li>Incorporation of background knowledge</li>
+    <li>Presentation and visualization of data mining results</li>
+  </ul>`
+};
+
+S[34] = {
+  kicker:"Major Issues · 2", title:"Major Issues in Data Mining (2)",
+  html:`<h3>Efficiency and Scalability</h3>
+  <ul>
+    <li>Efficiency and scalability of data mining algorithms</li>
+    <li>Parallel, distributed, stream, and incremental mining methods</li>
+  </ul>
+  <h3>Diversity of Data Types</h3>
+  <ul>
+    <li>Handling complex types of data</li>
+    <li>Mining dynamic, networked, and global data repositories</li>
+  </ul>
+  <h3>Data Mining and Society</h3>
+  <ul>
+    <li>Social impacts of data mining</li>
+    <li>Privacy-preserving data mining</li>
+    <li>Invisible data mining</li>
+  </ul>`
+};
+
+S[35] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(8) };
+
+S[36] = {
+  kicker:"History &amp; Society", title:"A Brief History of Data Mining Society",
+  html:`<ul>
+    <li><b>1989</b> — IJCAI Workshop on Knowledge Discovery in Databases
+      <ul><li>"Knowledge Discovery in Databases" (G. Piatetsky-Shapiro &amp; W. Frawley, 1991)</li></ul>
+    </li>
+    <li><b>1991–1994</b> — Workshops on Knowledge Discovery in Databases
+      <ul><li>"Advances in Knowledge Discovery and Data Mining" (Fayyad, Piatetsky-Shapiro, Smyth &amp; Uthurusamy, 1996)</li></ul>
+    </li>
+    <li><b>1995–1998</b> — International Conferences on Knowledge Discovery in Databases and Data Mining (KDD'95–98)
+      <ul><li>Journal of Data Mining and Knowledge Discovery (1997)</li></ul>
+    </li>
+    <li><b>Since 1998</b> — ACM SIGKDD conferences and SIGKDD Explorations</li>
+    <li>More conferences on data mining: PAKDD (1997), PKDD (1997), SIAM-Data Mining (2001), (IEEE) ICDM (2001), etc.</li>
+    <li><b>2007</b> — ACM Transactions on KDD begins</li>
+  </ul>`
+};
+
+S[37] = {
+  kicker:"History &amp; Society", title:"Conferences and Journals on Data Mining",
+  html:`<div class="cols">
+    <div>
+      <h3>KDD Conferences</h3>
+      <ul>
+        <li>ACM SIGKDD Int. Conf. on Knowledge Discovery in Databases and Data Mining (KDD)</li>
+        <li>SIAM Data Mining Conf. (SDM)</li>
+        <li>(IEEE) Int. Conf. on Data Mining (ICDM)</li>
+        <li>European Conf. on ML &amp; Principles/Practices of KDD (ECML-PKDD)</li>
+        <li>Pacific-Asia Conf. on Knowledge Discovery and Data Mining (PAKDD)</li>
+        <li>Int. Conf. on Web Search and Data Mining (WSDM)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Other Related Conferences</h3>
+      <ul>
+        <li>DB: ACM SIGMOD, VLDB, ICDE, EDBT, ICDT, …</li>
+        <li>Web &amp; IR: WWW, SIGIR, WSDM</li>
+        <li>ML: ICML, NIPS</li>
+        <li>PR: CVPR</li>
+      </ul>
+      <h3>Journals</h3>
+      <ul>
+        <li>Data Mining and Knowledge Discovery (DAMI / DMKD)</li>
+        <li>IEEE Trans. on Knowledge and Data Eng. (TKDE)</li>
+        <li>KDD Explorations</li>
+        <li>ACM Trans. on KDD</li>
+      </ul>
+    </div>
+  </div>`
+};
+
+S[38] = {
+  kicker:"History &amp; Society", title:"Where to Find References? DBLP, CiteSeer, Google",
+  html:`<ul>
+    <li><b>Data mining and KDD</b> (SIGKDD: CDROM)
+      <ul><li>Conferences: ACM-SIGKDD, IEEE-ICDM, SIAM-DM, PKDD, PAKDD, etc.</li>
+      <li>Journal: Data Mining and Knowledge Discovery, KDD Explorations, ACM TKDD</li></ul>
+    </li>
+    <li><b>Database systems</b> (SIGMOD: ACM SIGMOD Anthology — CD ROM)
+      <ul><li>Conferences: ACM-SIGMOD, ACM-PODS, VLDB, IEEE-ICDE, EDBT, ICDT, DASFAA</li>
+      <li>Journals: IEEE-TKDE, ACM-TODS/TOIS, JIIS, J. ACM, VLDB J., Info. Sys., etc.</li></ul>
+    </li>
+    <li><b>AI &amp; Machine Learning</b>
+      <ul><li>Conferences: ML, AAAI, IJCAI, COLT, CVPR, NIPS, etc.</li>
+      <li>Journals: Machine Learning, Artificial Intelligence, Knowledge and Information Systems, IEEE-PAMI, etc.</li></ul>
+    </li>
+    <li><b>Web and IR</b>
+      <ul><li>Conferences: SIGIR, WWW, CIKM, etc.</li>
+      <li>Journal: WWW: Internet and Web Information Systems</li></ul>
+    </li>
+    <li><b>Statistics</b>
+      <ul><li>Conference: Joint Stat. Meeting, etc.</li><li>Journal: Annals of Statistics, etc.</li></ul>
+    </li>
+    <li><b>Visualization</b>
+      <ul><li>Conferences: CHI, ACM-SIGGraph, etc.</li><li>Journal: IEEE Trans. Visualization and Computer Graphics, etc.</li></ul>
+    </li>
+  </ul>`
+};
+
+S[39] = { kicker:"Contents", title:"Chapter 1. Introduction", html: TOC(9) };
+
+S[40] = {
+  kicker:"Summary", title:"Summary",
+  html:`<ul>
+    <li>Data mining: discovering interesting patterns and knowledge from a massive amount of data</li>
+    <li>A natural evolution of database technology, in great demand, with wide applications</li>
+    <li>A KDD process includes data cleaning, data integration, data selection, transformation, data mining, pattern evaluation, and knowledge presentation</li>
+    <li>Mining can be performed on a variety of data</li>
+    <li>Data mining functionalities: characterization, discrimination, association, classification, clustering, outlier and trend analysis, etc.</li>
+    <li>Data mining technologies and applications</li>
+    <li>Major issues in data mining</li>
+  </ul>`
+};
+
+S[41] = {
+  kicker:"Reference Books", title:"Recommended Reference Books",
+  html:`<ul>
+    <li>S. Chakrabarti. <i>Mining the Web: Statistical Analysis of Hypertext and Semi-Structured Data.</i> Morgan Kaufmann, 2002</li>
+    <li>R. O. Duda, P. E. Hart, D. G. Stork. <i>Pattern Classification</i>, 2ed. Wiley-Interscience, 2000</li>
+    <li>T. Dasu, T. Johnson. <i>Exploratory Data Mining and Data Cleaning.</i> John Wiley &amp; Sons, 2003</li>
+    <li>U. Fayyad, G. Piatetsky-Shapiro, P. Smyth, R. Uthurusamy. <i>Advances in Knowledge Discovery and Data Mining.</i> AAAI/MIT Press, 1996</li>
+    <li>U. Fayyad, G. Grinstein, A. Wierse. <i>Information Visualization in Data Mining and Knowledge Discovery.</i> Morgan Kaufmann, 2001</li>
+    <li><b>J. Han, M. Kamber. <i>Data Mining: Concepts and Techniques.</i> Morgan Kaufmann, 3rd ed., 2011</b></li>
+    <li>D. J. Hand, H. Mannila, P. Smyth. <i>Principles of Data Mining.</i> MIT Press, 2001</li>
+    <li><b>T. Hastie, R. Tibshirani, J. Friedman. <i>The Elements of Statistical Learning</i>, 2nd ed. Springer-Verlag, 2009</b></li>
+    <li><b>B. Liu. <i>Web Data Mining.</i> Springer, 2006</b></li>
+    <li>T. M. Mitchell. <i>Machine Learning.</i> McGraw Hill, 1997</li>
+    <li>G. Piatetsky-Shapiro, W. J. Frawley. <i>Knowledge Discovery in Databases.</i> AAAI/MIT Press, 1991</li>
+    <li><b>P.-N. Tan, M. Steinbach, V. Kumar. <i>Introduction to Data Mining.</i> Wiley, 2005</b></li>
+    <li>S. M. Weiss, N. Indurkhya. <i>Predictive Data Mining.</i> Morgan Kaufmann, 1998</li>
+    <li><b>I. H. Witten, E. Frank. <i>Data Mining: Practical Machine Learning Tools and Techniques with Java Implementations</i>, 2nd ed. Morgan Kaufmann, 2005</b></li>
+  </ul>`
+};
+
+const TOTAL = 41;
+
+/* ============================================================
+   RENDERING / ROUTING
+   ============================================================ */
+const elHome = document.getElementById('view-home');
+const elSlide = document.getElementById('view-slide');
+const elTocWrap = document.getElementById('tocWrap');
+const elTitle = document.getElementById('slideTitle');
+const elKicker = document.getElementById('slideKicker');
+const elContent = document.getElementById('slideContent');
+const elCounter = document.getElementById('counter');
+const elProgressWrap = document.getElementById('progressWrap');
+const elProgressFill = document.getElementById('progressFill');
+const elPrev = document.getElementById('prevBtn');
+const elNext = document.getElementById('nextBtn');
+const elJump = document.getElementById('jump');
+
+function buildHome(){
+  let html = '';
+  SECTIONS.forEach(sec=>{
+    const [a,b] = sec.range;
+    html += `<div class="section-block">
+      <div class="section-head"><span class="num">${String(a).padStart(2,'0')}–${String(b).padStart(2,'0')}</span><h2>${sec.name}</h2></div>
+      <div class="card-grid">`;
+    for(let i=a;i<=b;i++){
+      const s = S[i];
+      const colors = ['#0284c7','#7c3aed','#059669','#b45309'];
+      const c = colors[i % colors.length];
+      html += `<a class="slide-card" href="#${i}">
+        <div class="n"><span>PAGE ${String(i).padStart(2,'0')}</span><span class="pill" style="background:${c}">${i}</span></div>
+        <div class="t">${s.title}</div>
+      </a>`;
+    }
+    html += `</div></div>`;
+  });
+  elTocWrap.innerHTML = html;
+}
+
+function renderSlide(n){
+  const s = S[n];
+  if(!s) return goHome();
+  elHome.style.display='none';
+  elSlide.style.display='block';
+  elProgressWrap.style.display='block';
+  elCounter.style.display='inline';
+  elKicker.innerHTML = `${s.kicker}<span class="sep">·</span>Page ${n} of ${TOTAL}`;
+  elTitle.textContent = s.title.replace(/&amp;/g,'&');
+  elContent.innerHTML = s.html;
+  elCounter.textContent = `${String(n).padStart(2,'0')} / ${TOTAL}`;
+  elProgressFill.style.width = (n/TOTAL*100)+'%';
+  elJump.textContent = `${n} / ${TOTAL}`;
+  elPrev.disabled = n<=1;
+  elNext.textContent = '';
+  if(n>=TOTAL){
+    elNext.innerHTML = 'Home →';
+  } else {
+    elNext.innerHTML = '<span class="label">Next</span> →';
+  }
+  window.scrollTo(0,0);
+  try{ localStorage.setItem('dm_last_slide', String(n)); }catch(e){}
+}
+
+function goHome(){
+  elSlide.style.display='none';
+  elHome.style.display='block';
+  elProgressWrap.style.display='none';
+  elCounter.style.display='none';
+  window.scrollTo(0,0);
+  try{
+    const last = localStorage.getItem('dm_last_slide');
+    const resumeBtn = document.getElementById('resumeBtn');
+    if(last && parseInt(last,10)>1){
+      resumeBtn.style.display='inline-flex';
+      resumeBtn.href = '#'+last;
+      resumeBtn.textContent = `Resume at page ${last} →`;
+    }
+  }catch(e){}
+}
+
+function route(){
+  const hash = location.hash.replace('#','');
+  if(!hash || hash==='home'){ goHome(); return; }
+  const n = parseInt(hash,10);
+  if(Number.isFinite(n) && n>=1 && n<=TOTAL){ renderSlide(n); }
+  else { goHome(); }
+}
+
+elPrev.addEventListener('click', ()=>{
+  const n = parseInt(elCounter.textContent,10);
+  if(n>1) location.hash = '#'+(n-1);
+});
+elNext.addEventListener('click', ()=>{
+  const n = parseInt(elCounter.textContent,10);
+  if(n>=TOTAL) location.hash = '#home';
+  else location.hash = '#'+(n+1);
+});
+document.addEventListener('keydown', (e)=>{
+  if(elSlide.style.display==='none') return;
+  if(e.key==='ArrowRight') elNext.click();
+  if(e.key==='ArrowLeft') elPrev.click();
+  if(e.key==='Escape' || e.key==='h') location.hash='#home';
+});
+
+/* theme toggle */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(t){
+  if(t) document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+try{
+  const saved = localStorage.getItem('dm_theme');
+  if(saved) applyTheme(saved);
+}catch(e){}
+themeBtn.addEventListener('click', ()=>{
+  const cur = document.documentElement.getAttribute('data-theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  let next;
+  if(!cur) next = prefersDark ? 'light' : 'dark';
+  else if(cur==='dark') next='light';
+  else next='dark';
+  applyTheme(next);
+  try{ localStorage.setItem('dm_theme', next); }catch(e){}
+});
+
+window.addEventListener('hashchange', route);
+buildHome();
+route();
+</script>
+</body>
+</html>
